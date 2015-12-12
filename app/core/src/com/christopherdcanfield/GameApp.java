@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class GameApp extends ApplicationAdapter {
-	private final byte[][] world = new byte[1000][1000];
+	private World world;
 
 	SpriteBatch batch;
 	Texture img;
@@ -22,6 +22,8 @@ public class GameApp extends ApplicationAdapter {
 		img = new Texture("badlogic.jpg");
 
 		Gdx.input.setInputProcessor(new UserInputHandler());
+		
+		world = new World();
 	}
 
 	@Override
