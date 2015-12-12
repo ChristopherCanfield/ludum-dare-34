@@ -47,6 +47,9 @@ project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+		
+		compile 'com.google.guava:guava:18.0'
+		compile 'org.apache.commons:commons-lang3:3.4'
     }
 }
 

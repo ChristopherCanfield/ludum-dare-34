@@ -6,6 +6,11 @@ import java.awt.GraphicsEnvironment;
 
 
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Collections;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,7 +19,6 @@ import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.control.ComboBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class Launcher extends Application
@@ -24,24 +28,24 @@ public class Launcher extends Application
 	@Override
 	public void start(Stage stage) {
 		root = new Group();
-		
+
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice display = ge.getDefaultScreenDevice();
-		DisplayMode[] availableModes = display.getDisplayModes();
+		DisplayMode[] allDisplayModes = display.getDisplayModes();
 
-		for (DisplayMode mode : availableModes) {
-		    System.out.println(mode.getWidth() + "x" + mode.getHeight() + "..." + mode.getRefreshRate());
+		Set<DisplayModeWrapper> displayModes = new HashSet<>();
+		for (int i = 0; i < allDisplayModes.length; i++) {
+			DisplayMode mode = allDisplayModes[i];
+			displayModes.add(new DisplayModeWrapper(mode, i));
+		    System.out.println(mode.getWidth() + "x" + mode.getHeight() + "..." + mode.getRefreshRate() + "..." + mode.getBitDepth());
 		}
-		
-		ObservableList<String> options = FXCollections.observableArrayList(
-				"Option 1",
-				"Option 2",
-				"Option 3"
-				);
-		ComboBox<String> comboBox = new ComboBox<String>(options);
+		ArrayList<DisplayModeWrapper> sortedDisplayModes = new ArrayList<>(displayModes);
+		Collections.sort(sortedDisplayModes);
+
+		ObservableList<DisplayModeWrapper> options = FXCollections.observableArrayList(sortedDisplayModes);
+		ComboBox<DisplayModeWrapper> comboBox = new ComboBox<>(options);
 		root.getChildren().add(comboBox);
-		
-		
+
 		Scene scene = new Scene(root, 500, 600, true, SceneAntialiasing.BALANCED);
 		scene.setFill(Color.WHITE);
 
@@ -50,7 +54,7 @@ public class Launcher extends Application
 		stage.setScene(scene);
 		stage.show();
 	}
-	
+
 	public static void main(String[] args) {
 		launch(args);
 	}
