@@ -13,7 +13,13 @@ public class World
 	{
 		for (int column = 0; column < COLUMNS; column++) {
 			for (int row = 0; row < ROWS; row++) {
-				world[column][row] = Block.TYPE_GRASS;
+				if ((column + row) % 5 == 0) {
+					world[column][row] = Block.TYPE_SHALLOW_WATER;
+				} else if ((column + row) % 4 == 0) {
+					world[column][row] = Block.TYPE_DIRT;
+				} else {
+					world[column][row] = Block.TYPE_GRASS;
+				}
 			}
 		}
 	}
