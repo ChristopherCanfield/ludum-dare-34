@@ -18,6 +18,7 @@ import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -45,25 +46,26 @@ public class Launcher extends Application
 //		Collections.sort(sortedDisplayModes);
 
 		ObservableList<PrettifiedDisplayMode> options = FXCollections.observableArrayList(displayModes);
-		ComboBox<PrettifiedDisplayMode> comboBox = new ComboBox<>(options);
+		ComboBox<PrettifiedDisplayMode> displayModesComboBox = new ComboBox<>(options);
 		DisplayMode desktopDisplayMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
-		comboBox.getSelectionModel().select(new PrettifiedDisplayMode(desktopDisplayMode));
-		root.getChildren().add(comboBox);
-
-		Button button = new Button("Test");
-		root.getChildren().add(button);
-		button.setOnAction(new EventHandler<ActionEvent>() {
+		displayModesComboBox.getSelectionModel().select(new PrettifiedDisplayMode(desktopDisplayMode));
+		root.getChildren().add(displayModesComboBox);
+		
+		Button startGameButton = new Button("Launch Game");
+		root.getChildren().add(startGameButton);
+		startGameButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				stage.hide();
 				
 				try {
-					PrettifiedDisplayMode mode = comboBox.valueProperty().get();
+					PrettifiedDisplayMode mode = displayModesComboBox.valueProperty().get();
 	
 					LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 					config.setFromDisplayMode(mode.underlying);
 					config.forceExit = false;
 					config.foregroundFPS = 30;
+					config.fullscreen = false;
 					gameApp = new LwjglApplication(new GameApp(), config);
 				} catch (Exception e) {
 					stage.show();
