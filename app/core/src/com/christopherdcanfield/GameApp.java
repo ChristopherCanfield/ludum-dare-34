@@ -22,6 +22,8 @@ public class GameApp extends ApplicationAdapter {
 	public void create () {
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
+
+		Gdx.input.setInputProcessor(new UserInputHandler());
 	}
 
 	@Override
@@ -30,7 +32,7 @@ public class GameApp extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		batch.begin();
-//		batch.draw(img, 0, 0);
+		batch.draw(img, 0, 0);
 		batch.end();
 	}
 }
