@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Timer;
@@ -55,25 +56,50 @@ public class World
 		world[COLUMNS-2][1] = Block.TYPE_BLOB;
 		
 		App.scheduledExecutor.scheduleAtFixedRate(() -> {
-			final int growthCount = Math.max(1, IntMath.log2(blob.size(), RoundingMode.CEILING));
-			int growthRemaining = growthCount;
-			List<GridPoint2> emptyAdjacent = World.getEmptyAdjacentToBlob(World.this, blob);
-			System.out.println("Growing");
-			
-			while (growthRemaining > 0)
-			{
-				int emptyCellIndex = random.nextInt(emptyAdjacent.size());
-				GridPoint2 emptyCell = emptyAdjacent.get(emptyCellIndex);
-				if (world[emptyCell.x][emptyCell.y] != Block.TYPE_BLOB) {
-					System.out.println("Adding new blob: " + emptyCell);
-					world[emptyCell.x][emptyCell.y] = Block.TYPE_BLOB;
-					blob.add(emptyCell);
-					growthRemaining--;
+			try {
+				int log2Blob = IntMath.log2(blob.size(), RoundingMode.CEILING);
+				final int growthCount = Math.max(1, log2Blob * log2Blob);
+				final List<GridPoint2> emptyAdjacent = World.getEmptyAdjacentToBlob(World.this, blob);
+				if (emptyAdjacent.isEmpty()) {
+					System.err.println("emptyAdjacent list is empty, but should not be.");
+					return;
 				}
+				
+				Gdx.app.postRunnable(() -> {
+					System.out.println("Growing: " + growthCount);
+					int growthRemaining = growthCount;
+					while (growthRemaining > 0)
+					{
+						int emptyCellIndex = random.nextInt(emptyAdjacent.size());
+						GridPoint2 emptyCell = emptyAdjacent.get(emptyCellIndex);
+						if (world[emptyCell.x][emptyCell.y] != Block.TYPE_BLOB) {
+//							System.out.println("Adding new blob: " + emptyCell);
+							world[emptyCell.x][emptyCell.y] = Block.TYPE_BLOB;
+							blob.add(emptyCell);
+							emptyAdjacent.remove(emptyCell);
+							growthRemaining--;
+							
+							float blobPctOfWorld = (blob.size() / (float)BLOCK_COUNT) * 100;
+							System.out.format("Blob percentage of world: %.2f%n", blobPctOfWorld);
+							System.out.println("Blob block count: " + blob.size());
+							
+							if (emptyAdjacent.isEmpty()) {
+								System.err.println("emptyAdjacent is now empty; exiting early.");
+								return;
+							}
+						} else {
+							System.out.println(emptyCell + " is not empty");
+							return;
+						}
+					}
+					
+					System.out.println("Grew");
+				});
+			} catch (Exception e) {
+				System.out.println(e);
+				e.printStackTrace();
 			}
-			
-			System.out.println("Grew");
-		}, 1000, 250, TimeUnit.MILLISECONDS);
+		}, 1000, 175, TimeUnit.MILLISECONDS);
 	}
 	
 	public byte[][] get()
