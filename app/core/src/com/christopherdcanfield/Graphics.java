@@ -10,27 +10,31 @@ public class Graphics
 	private final Texture dirtTexture;
 	private final Texture grassTexture;
 	private final Texture tallGrassTexture;
-	private final Texture waterTexture;
+	private final Texture shallowWaterTexture;
+	private final Texture deepWaterTexture;
 
 	public Graphics(SpriteBatch batch)
 	{
 		this.batch = batch;
 
-		dirtTexture = null;
-		grassTexture = null;
-		tallGrassTexture = null;
-		waterTexture = null;
+		dirtTexture = new Texture("dirt.png");
+		grassTexture = new Texture("grass.png");
+		tallGrassTexture = new Texture("tallGrass.png");
+		shallowWaterTexture = new Texture("water.png");
+		deepWaterTexture = new Texture("deepWaterTexture.png");
 	}
 
-	public void render(byte[][] world)
+	public void render(World world)
 	{
-		for (int column = 0; column < world.length; column++) {
-			for (int row = 0; row < world[0].length; row++) {
+		byte[][] blocks = world.get();
+		
+		for (int column = 0; column < blocks.length; column++) {
+			for (int row = 0; row < blocks[0].length; row++) {
 				int x = Block.worldColumnToPixelX(column);
 				int y = Block.worldRowToPixelY(row);
 				
 				final Texture texture;
-				switch (world[column][row]) {
+				switch (blocks[column][row]) {
 					case Block.TYPE_DIRT:
 						texture = dirtTexture;
 						break;
@@ -40,11 +44,13 @@ public class Graphics
 					case Block.TYPE_TALL_GRASS:
 						texture = tallGrassTexture;
 						break;
-					case Block.TYPE_WATER:
-						texture = waterTexture;
+					case Block.TYPE_SHALLOW_WATER:
+						texture = shallowWaterTexture;
 						break;
+					case Block.TYPE_DEEP_WATER:
+						texture = deepWaterTexture;
 					default:
-						throw new RuntimeException("Unknown block type: " + world[column][row]);
+						throw new RuntimeException("Unknown block type: " + blocks[column][row]);
 				}
 				
 				batch.draw(dirtTexture, x, y, Block.PIXELS_WIDTH, Block.PIXELS_HEIGHT);

@@ -7,8 +7,9 @@ public class Block
 
 	public static final byte TYPE_DIRT = 0b0000_0000;
 	public static final byte TYPE_GRASS = 0b0000_0001;
-	public static final byte TYPE_TALL_GRASS = 0b000_0011;
-	public static final byte TYPE_WATER = 0b0000_0010;
+	public static final byte TYPE_TALL_GRASS = 0b000_0010;
+	public static final byte TYPE_SHALLOW_WATER = 0b0000_0011;
+	public static final byte TYPE_DEEP_WATER = 0b0000_0100;
 
 //	public static byte getType(byte block)
 //	{
