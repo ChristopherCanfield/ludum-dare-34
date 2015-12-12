@@ -9,8 +9,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class GameApp extends ApplicationAdapter {
 	private final byte[][] world = new byte[1000][1000];
 
-	private final int PIXELS_PER_BLOCK = 4;
-
 	SpriteBatch batch;
 	Texture img;
 
