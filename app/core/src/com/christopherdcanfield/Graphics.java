@@ -57,8 +57,8 @@ public class Graphics
 				
 				float left = camera.position.x - viewportHalfWidth;
 				float right = camera.position.x + viewportHalfWidth;
-				float top = camera.viewportHeight / 2f + camera.position.y;
-				float bottom = camera.position.y - camera.viewportHeight / 2f;
+				float top = camera.position.y + viewportHalfHeight;
+				float bottom = camera.position.y - viewportHalfHeight;
 				
 				if (x >= left && x <= right && y <= top && y >= bottom)
 				{

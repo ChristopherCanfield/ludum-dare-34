@@ -2,6 +2,7 @@ package com.christopherdcanfield;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -12,6 +13,8 @@ public class GameApp extends ApplicationAdapter {
 	
 	private SpriteBatch batch;
 	private OrthographicCamera camera;
+	
+	private UserInputHandler inputHandler;
 	
 	public GameApp()
 	{
@@ -28,7 +31,8 @@ public class GameApp extends ApplicationAdapter {
 			camera.update();
 			graphics = new Graphics(batch, camera);
 			
-			Gdx.input.setInputProcessor(new UserInputHandler(camera));
+			inputHandler = new UserInputHandler(camera, world.getBounds());
+			Gdx.input.setInputProcessor(inputHandler);
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -43,6 +47,7 @@ public class GameApp extends ApplicationAdapter {
 
 	@Override
 	public void render () {
+		inputHandler.update();
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 		

@@ -63,6 +63,7 @@ public class Launcher extends Application
 					LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 					config.setFromDisplayMode(mode.underlying);
 					config.forceExit = false;
+					config.foregroundFPS = 30;
 					gameApp = new LwjglApplication(new GameApp(), config);
 				} catch (Exception e) {
 					stage.show();
