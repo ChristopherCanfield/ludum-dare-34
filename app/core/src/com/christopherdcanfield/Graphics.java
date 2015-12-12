@@ -17,6 +17,7 @@ public class Graphics
 	private final Texture tallGrassTexture;
 	private final Texture shallowWaterTexture;
 	private final Texture deepWaterTexture;
+	private final Texture blobTexture;
 
 	public Graphics(SpriteBatch batch, OrthographicCamera camera)
 	{
@@ -31,6 +32,7 @@ public class Graphics
 		tallGrassTexture = new Texture("tallGrass.png");
 		shallowWaterTexture = new Texture("water.png");
 		deepWaterTexture = new Texture("deepWater.png");
+		blobTexture = new Texture("blob.png");
 	}
 	
 	public void dispose()
@@ -78,6 +80,9 @@ public class Graphics
 							break;
 						case Block.TYPE_DEEP_WATER:
 							texture = deepWaterTexture;
+							break;
+						case Block.TYPE_BLOB:
+							texture = blobTexture;
 							break;
 						default:
 							throw new RuntimeException("Unknown block type: " + blocks[column][row]);

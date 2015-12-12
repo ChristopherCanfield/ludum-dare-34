@@ -5,11 +5,12 @@ public class Block
 	public static final int PIXELS_WIDTH = 4;
 	public static final int PIXELS_HEIGHT = 4;
 
-	public static final byte TYPE_DIRT = 0b0000_0000;
-	public static final byte TYPE_GRASS = 0b0000_0001;
-	public static final byte TYPE_TALL_GRASS = 0b000_0010;
-	public static final byte TYPE_SHALLOW_WATER = 0b0000_0011;
-	public static final byte TYPE_DEEP_WATER = 0b0000_0100;
+	public static final byte TYPE_DIRT = 1;
+	public static final byte TYPE_GRASS = 0;
+	public static final byte TYPE_TALL_GRASS = 2;
+	public static final byte TYPE_SHALLOW_WATER = 3;
+	public static final byte TYPE_DEEP_WATER = 4;
+	public static final byte TYPE_BLOB = 5;
 
 //	public static byte getType(byte block)
 //	{

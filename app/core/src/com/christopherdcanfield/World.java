@@ -1,6 +1,16 @@
 package com.christopherdcanfield;
 
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Timer;
+import com.google.common.math.IntMath;
 
 public class World
 {
@@ -11,6 +21,8 @@ public class World
 	private final byte[][] world = new byte[COLUMNS][ROWS];
 	private final Rectangle bounds;
 	
+	private final ArrayList<GridPoint2> blob = new ArrayList<>();
+	private final Random random = new Random();
 	
 	public World()
 	{
@@ -37,6 +49,33 @@ public class World
 		}
 		
 		bounds = new Rectangle(0, 0, COLUMNS * Block.PIXELS_WIDTH, ROWS * Block.PIXELS_HEIGHT);
+		
+		blob.add(new GridPoint2(COLUMNS - 2, 1));
+		world[COLUMNS-2][1] = Block.TYPE_BLOB;
+		
+		Timer.schedule(new Timer.Task() {
+			@Override
+			public void run() {
+				final int growthCount = Math.max(1, IntMath.log2(blob.size(), RoundingMode.CEILING));
+				int growthRemaining = growthCount;
+				List<GridPoint2> emptyAdjacent = World.getEmptyAdjacentToBlob(World.this, blob);
+				System.out.println("Growing");
+				
+				while (growthRemaining > 0)
+				{
+					int emptyCellIndex = random.nextInt(emptyAdjacent.size());
+					GridPoint2 emptyCell = emptyAdjacent.get(emptyCellIndex);
+					if (world[emptyCell.x][emptyCell.y] != Block.TYPE_BLOB) {
+						System.out.println("Adding new blob: " + emptyCell);
+						world[emptyCell.x][emptyCell.y] = Block.TYPE_BLOB;
+						blob.add(emptyCell);
+						growthRemaining--;
+					}
+				}
+				
+				System.out.println("Grew");
+			}
+		}, 2, 2);
 	}
 	
 	public byte[][] get()
@@ -47,5 +86,57 @@ public class World
 	public Rectangle getBounds()
 	{
 		return bounds;
+	}
+	
+	static List<GridPoint2> getEmptyAdjacentToBlob(World world, ArrayList<GridPoint2> blob)
+	{
+		final byte[][] blocks = world.get();
+		
+		List<GridPoint2> blobsWithEmptyAdjacent = blob.parallelStream()
+				.filter(blobPosition -> {
+					boolean notFirstColumn = blobPosition.x > 0;
+					boolean notLastColumn = blobPosition.x < World.COLUMNS - 1;
+					boolean notFirstRow = blobPosition.y > 0;
+					boolean notLastRow = blobPosition.y < World.ROWS - 1;
+					
+					if (notFirstColumn && blocks[blobPosition.x-1][blobPosition.y] != Block.TYPE_BLOB) {
+						return true;
+					}
+					if (notLastColumn && blocks[blobPosition.x+1][blobPosition.y] != Block.TYPE_BLOB) {
+						return true;
+					}
+					if (notFirstRow && blocks[blobPosition.x][blobPosition.y-1] != Block.TYPE_BLOB) {
+						return true;
+					}
+					if (notLastRow && blocks[blobPosition.x][blobPosition.y+1] != Block.TYPE_BLOB) {
+						return true;
+					}
+					return false;
+				})
+				.distinct()
+				.collect(Collectors.toList());
+		
+		HashSet<GridPoint2> emptyAdjacent = new HashSet<>();
+		for (GridPoint2 blobPosition : blobsWithEmptyAdjacent) {
+			boolean notFirstColumn = blobPosition.x > 0;
+			boolean notLastColumn = blobPosition.x < World.COLUMNS - 1;
+			boolean notFirstRow = blobPosition.y > 0;
+			boolean notLastRow = blobPosition.y < World.ROWS - 1;
+			
+			if (notFirstColumn && blocks[blobPosition.x - 1][blobPosition.y] != Block.TYPE_BLOB) {
+				emptyAdjacent.add(new GridPoint2(blobPosition.x-1, blobPosition.y));
+			}
+			if (notLastColumn && blocks[blobPosition.x + 1][blobPosition.y] != Block.TYPE_BLOB) {
+				emptyAdjacent.add(new GridPoint2(blobPosition.x+1, blobPosition.y));
+			}
+			if (notFirstRow && blocks[blobPosition.x][blobPosition.y - 1] != Block.TYPE_BLOB) {
+				emptyAdjacent.add(new GridPoint2(blobPosition.x, blobPosition.y-1));
+			}
+			if (notLastRow && blocks[blobPosition.x][blobPosition.y + 1] != Block.TYPE_BLOB) {
+				emptyAdjacent.add(new GridPoint2(blobPosition.x, blobPosition.y+1));
+			}
+		}
+		
+		return new ArrayList<>(emptyAdjacent);
 	}
 }
