@@ -21,7 +21,20 @@ public class Graphics
 		grassTexture = new Texture("grass.png");
 		tallGrassTexture = new Texture("tallGrass.png");
 		shallowWaterTexture = new Texture("water.png");
-		deepWaterTexture = new Texture("deepWaterTexture.png");
+		deepWaterTexture = new Texture("deepWater.png");
+	}
+	
+	public void dispose()
+	{
+		try {
+			dirtTexture.dispose();
+			grassTexture.dispose();
+			tallGrassTexture.dispose();
+			shallowWaterTexture.dispose();
+			deepWaterTexture.dispose();
+		} catch (Exception e) {
+			
+		}
 	}
 
 	public void render(World world)
@@ -49,11 +62,12 @@ public class Graphics
 						break;
 					case Block.TYPE_DEEP_WATER:
 						texture = deepWaterTexture;
+						break;
 					default:
 						throw new RuntimeException("Unknown block type: " + blocks[column][row]);
 				}
 				
-				batch.draw(dirtTexture, x, y, Block.PIXELS_WIDTH, Block.PIXELS_HEIGHT);
+				batch.draw(texture, x, y, Block.PIXELS_WIDTH, Block.PIXELS_HEIGHT);
 			}
 		}
 	}

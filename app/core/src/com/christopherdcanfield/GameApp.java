@@ -3,29 +3,37 @@ package com.christopherdcanfield;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class GameApp extends ApplicationAdapter {
 	private World world;
 	private Graphics graphics;
 	
-	SpriteBatch batch;
-	Texture img;
-
+	private SpriteBatch batch;
+	
 	public GameApp()
 	{
 	}
 
 	@Override
 	public void create () {
-		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
-
-		Gdx.input.setInputProcessor(new UserInputHandler());
-		
-		world = new World();
-		graphics = new Graphics(batch);
+		try {
+			batch = new SpriteBatch();
+	
+			Gdx.input.setInputProcessor(new UserInputHandler());
+			
+			world = new World();
+			graphics = new Graphics(batch);
+		}
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			
+			batch.dispose();
+			graphics.dispose();
+			
+			Gdx.app.exit();
+		}
 	}
 
 	@Override
@@ -35,10 +43,6 @@ public class GameApp extends ApplicationAdapter {
 
 		batch.begin();
 		graphics.render(world);
-		batch.end();
-		
-		batch.begin();
-		batch.draw(img, 0, 0);
 		batch.end();
 	}
 }

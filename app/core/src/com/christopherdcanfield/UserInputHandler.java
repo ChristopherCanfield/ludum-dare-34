@@ -6,6 +6,10 @@ import com.badlogic.gdx.Input.Keys;
 
 public class UserInputHandler implements InputProcessor
 {
+	public UserInputHandler()
+	{
+	}
+	
 	@Override
 	public boolean keyDown(int keycode)
 	{

@@ -8,6 +8,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.christopherdcanfield.GameApp;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -23,11 +24,13 @@ import javafx.stage.Stage;
 public class Launcher extends Application
 {
 	private Group root;
+	private Stage launcherWindow;
 	private LwjglApplication gameApp;
 
 	@Override
 	public void start(Stage stage) {
 		root = new Group();
+		launcherWindow = stage;
 
 		DisplayMode[] allDisplayModes = LwjglApplicationConfiguration.getDisplayModes();
 
@@ -52,11 +55,18 @@ public class Launcher extends Application
 		button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				PrettifiedDisplayMode mode = comboBox.valueProperty().get();
-
-				LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-				config.setFromDisplayMode(mode.underlying);
-				gameApp = new LwjglApplication(new GameApp(), config);
+				stage.hide();
+				
+				try {
+					PrettifiedDisplayMode mode = comboBox.valueProperty().get();
+	
+					LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+					config.setFromDisplayMode(mode.underlying);
+					config.forceExit = false;
+					gameApp = new LwjglApplication(new GameApp(), config);
+				} catch (Exception e) {
+					stage.show();
+				}
 			}
 		});
 
