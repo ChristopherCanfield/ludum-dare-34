@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.badlogic.gdx.math.GridPoint2;
@@ -28,13 +29,13 @@ public class World
 	{
 		for (int column = 0; column < COLUMNS; column++) {
 			for (int row = 0; row < ROWS; row++) {
-				if ((column + row) % 5 == 0) {
-					world[column][row] = Block.TYPE_SHALLOW_WATER;
-				} else if ((column + row) % 4 == 0) {
-					world[column][row] = Block.TYPE_DIRT;
-				} else {
-					world[column][row] = Block.TYPE_GRASS;
-				}
+//				if ((column + row) % 5 == 0) {
+//					world[column][row] = Block.TYPE_SHALLOW_WATER;
+//				} else if ((column + row) % 4 == 0) {
+//					world[column][row] = Block.TYPE_DIRT;
+//				} else {
+//					world[column][row] = Block.TYPE_GRASS;
+//				}
 			}
 		}
 		
@@ -53,29 +54,26 @@ public class World
 		blob.add(new GridPoint2(COLUMNS - 2, 1));
 		world[COLUMNS-2][1] = Block.TYPE_BLOB;
 		
-		Timer.schedule(new Timer.Task() {
-			@Override
-			public void run() {
-				final int growthCount = Math.max(1, IntMath.log2(blob.size(), RoundingMode.CEILING));
-				int growthRemaining = growthCount;
-				List<GridPoint2> emptyAdjacent = World.getEmptyAdjacentToBlob(World.this, blob);
-				System.out.println("Growing");
-				
-				while (growthRemaining > 0)
-				{
-					int emptyCellIndex = random.nextInt(emptyAdjacent.size());
-					GridPoint2 emptyCell = emptyAdjacent.get(emptyCellIndex);
-					if (world[emptyCell.x][emptyCell.y] != Block.TYPE_BLOB) {
-						System.out.println("Adding new blob: " + emptyCell);
-						world[emptyCell.x][emptyCell.y] = Block.TYPE_BLOB;
-						blob.add(emptyCell);
-						growthRemaining--;
-					}
+		App.scheduledExecutor.scheduleAtFixedRate(() -> {
+			final int growthCount = Math.max(1, IntMath.log2(blob.size(), RoundingMode.CEILING));
+			int growthRemaining = growthCount;
+			List<GridPoint2> emptyAdjacent = World.getEmptyAdjacentToBlob(World.this, blob);
+			System.out.println("Growing");
+			
+			while (growthRemaining > 0)
+			{
+				int emptyCellIndex = random.nextInt(emptyAdjacent.size());
+				GridPoint2 emptyCell = emptyAdjacent.get(emptyCellIndex);
+				if (world[emptyCell.x][emptyCell.y] != Block.TYPE_BLOB) {
+					System.out.println("Adding new blob: " + emptyCell);
+					world[emptyCell.x][emptyCell.y] = Block.TYPE_BLOB;
+					blob.add(emptyCell);
+					growthRemaining--;
 				}
-				
-				System.out.println("Grew");
 			}
-		}, 2, 2);
+			
+			System.out.println("Grew");
+		}, 1000, 250, TimeUnit.MILLISECONDS);
 	}
 	
 	public byte[][] get()

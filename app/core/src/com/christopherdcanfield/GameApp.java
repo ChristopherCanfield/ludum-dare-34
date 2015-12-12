@@ -21,7 +21,7 @@ public class GameApp extends ApplicationAdapter {
 	}
 
 	@Override
-	public void create () {
+	public void create() {
 		try {
 			batch = new SpriteBatch();
 	
@@ -46,7 +46,7 @@ public class GameApp extends ApplicationAdapter {
 	}
 
 	@Override
-	public void render () {
+	public void render() {
 		inputHandler.update();
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
@@ -57,5 +57,11 @@ public class GameApp extends ApplicationAdapter {
 		batch.begin();
 		graphics.render(world);
 		batch.end();
+	}
+	
+	@Override
+	public void dispose()
+	{
+		App.scheduledExecutor.shutdownNow();
 	}
 }

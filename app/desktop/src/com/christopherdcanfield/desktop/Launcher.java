@@ -65,6 +65,8 @@ public class Launcher extends Application
 					config.setFromDisplayMode(mode.underlying);
 					config.forceExit = false;
 					config.foregroundFPS = 30;
+					config.backgroundFPS = 30;
+					config.title = "Canfield LD34";
 					config.fullscreen = false;
 					gameApp = new LwjglApplication(new GameApp(), config);
 				} catch (Exception e) {

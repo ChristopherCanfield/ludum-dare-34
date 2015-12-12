@@ -2,8 +2,8 @@ package com.christopherdcanfield;
 
 public class Block
 {
-	public static final int PIXELS_WIDTH = 4;
-	public static final int PIXELS_HEIGHT = 4;
+	public static final int PIXELS_WIDTH = 2;
+	public static final int PIXELS_HEIGHT = 2;
 
 	public static final byte TYPE_DIRT = 1;
 	public static final byte TYPE_GRASS = 0;
