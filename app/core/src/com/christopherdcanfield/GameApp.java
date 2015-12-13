@@ -88,6 +88,7 @@ public class GameApp extends ApplicationAdapter {
 			batch.setProjectionMatrix(camera.combined);
 			
 			batch.totalRenderCalls = 0;
+			batch.maxSpritesInBatch = 0;
 			GLProfiler.reset();
 			
 			Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -100,12 +101,16 @@ public class GameApp extends ApplicationAdapter {
 			
 			/* Draw text. */
 			if (debugInfo != null && debugInfoLayout != null) {
+				float right = camera.position.x + (camera.viewportWidth / 2f);
+				float bottom = camera.position.y - (camera.viewportHeight / 2f);
+				
 				batch.begin();
 				batch.enableBlending();
-				batch.draw(transparentGrayPixel, Gdx.graphics.getWidth() - debugInfoLayout.width - 4, 0, debugInfoLayout.width + 4, debugInfoLayout.height + 8);
-				debugInfoFont.draw(batch, debugInfoText, Gdx.graphics.getWidth() - debugInfoLayout.width, debugInfoLayout.height + 4);
+				batch.draw(transparentGrayPixel, right - debugInfoLayout.width - 4, bottom, debugInfoLayout.width + 4, debugInfoLayout.height + 8);
+				debugInfoFont.draw(batch, debugInfoText, right - debugInfoLayout.width, bottom + debugInfoLayout.height + 4);
 				batch.end();
 			}
+			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
