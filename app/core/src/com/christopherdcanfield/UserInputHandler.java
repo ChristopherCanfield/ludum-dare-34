@@ -21,13 +21,14 @@ public class UserInputHandler implements InputProcessor
 	private static final float cameraMoveSpeedFast = cameraMoveSpeed * 4;
 	
 	private final Set<GridPoint2> selectedFeatures;
+	private final GridPoint2[] hoveredBlock;
 	
 	private boolean moveCameraLeft;
 	private boolean moveCameraRight;
 	private boolean moveCameraUp;
 	private boolean moveCameraDown;
 	
-	public UserInputHandler(OrthographicCamera camera, Rectangle worldBounds, Set<GridPoint2> selectedFeatures)
+	public UserInputHandler(OrthographicCamera camera, Rectangle worldBounds, Set<GridPoint2> selectedFeatures, GridPoint2[] hoveredBlock)
 	{
 		this.camera = camera;
 		this.worldBounds = worldBounds;
@@ -38,6 +39,7 @@ public class UserInputHandler implements InputProcessor
 		System.out.println("Viewport: " + camera.viewportWidth + "x" + camera.viewportHeight);
 		
 		this.selectedFeatures = selectedFeatures;
+		this.hoveredBlock = hoveredBlock;
 	}
 	
 	public void update()
@@ -171,6 +173,12 @@ public class UserInputHandler implements InputProcessor
 	@Override
 	public boolean mouseMoved(int screenX, int screenY)
 	{
+		int left = (int)(camera.position.x - (camera.viewportWidth / 2f));
+		int bottom = (int)(camera.position.y - (camera.viewportHeight / 2f));
+		int column = TerrainFeature.screenXToColumn(screenX + left);
+		int row = TerrainFeature.screenYToRow(screenY - bottom, Gdx.graphics.getHeight());
+		hoveredBlock[0] = new GridPoint2(column, row);
+		
 		return false;
 	}
 

@@ -28,9 +28,11 @@ public class GameApp extends ApplicationAdapter {
 	
 	private UserInputHandler inputHandler;
 	private Set<GridPoint2> selectedFeatures;
+	private GridPoint2[] hoveredBlock = new GridPoint2[1];
 	
 	private Texture transparentGrayPixelTexture;
 	private Texture selectedTexture;
+	private Texture hoverTexture;
 
 	private BitmapFont debugInfoFont;
 	private String debugInfoText;
@@ -54,6 +56,7 @@ public class GameApp extends ApplicationAdapter {
 			
 			transparentGrayPixelTexture = new Texture("transparentGrayPixel.png");
 			selectedTexture = new Texture("selected.png");
+			hoverTexture = new Texture("hover.png");
 			
 			FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/source-code-pro/SourceCodePro-Light.otf"));
 			FreeTypeFontParameter fontParams = new FreeTypeFontParameter();
@@ -66,7 +69,7 @@ public class GameApp extends ApplicationAdapter {
 			GLProfiler.enable();
 			
 			selectedFeatures = new HashSet<>();
-			inputHandler = new UserInputHandler(camera, world.getBounds(), selectedFeatures);
+			inputHandler = new UserInputHandler(camera, world.getBounds(), selectedFeatures, hoveredBlock);
 			Gdx.input.setInputProcessor(inputHandler);
 			
 			App.scheduledExecutor.scheduleAtFixedRate(() -> {
@@ -114,10 +117,18 @@ public class GameApp extends ApplicationAdapter {
 				int x = TerrainFeature.worldColumnToPixelX(selectedCell.x);
 				int y = TerrainFeature.worldRowToPixelY(selectedCell.y);
 				System.out.println("Drawing selected " + x + "," + y);
-				batch.draw(selectedTexture, x, y, TerrainFeature.PIXELS_WIDTH, TerrainFeature.PIXELS_WIDTH);
+				batch.draw(selectedTexture, x, y, TerrainFeature.PIXELS_WIDTH, TerrainFeature.PIXELS_HEIGHT);
 			}
 			batch.end();
 			
+			/* Render hovered block. */
+			if (hoveredBlock[0] != null) {
+				batch.begin();
+				int x = TerrainFeature.worldColumnToPixelX(hoveredBlock[0].x);
+				int y = TerrainFeature.worldRowToPixelY(hoveredBlock[0].y);
+				batch.draw(hoverTexture, x, y, TerrainFeature.PIXELS_WIDTH, TerrainFeature.PIXELS_HEIGHT);
+				batch.end();
+			}
 			
 			/* Draw text. */
 			if (debugInfo != null && debugInfoLayout != null) {
