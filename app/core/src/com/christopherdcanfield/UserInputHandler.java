@@ -1,10 +1,13 @@
 package com.christopherdcanfield;
 
 
+import java.util.Set;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
 
 public class UserInputHandler implements InputProcessor
@@ -17,12 +20,14 @@ public class UserInputHandler implements InputProcessor
 	private static final float cameraMoveSpeed = 30f;
 	private static final float cameraMoveSpeedFast = cameraMoveSpeed * 4;
 	
+	private final Set<GridPoint2> selectedFeatures;
+	
 	private boolean moveCameraLeft;
 	private boolean moveCameraRight;
 	private boolean moveCameraUp;
 	private boolean moveCameraDown;
 	
-	public UserInputHandler(OrthographicCamera camera, Rectangle worldBounds)
+	public UserInputHandler(OrthographicCamera camera, Rectangle worldBounds, Set<GridPoint2> selectedFeatures)
 	{
 		this.camera = camera;
 		this.worldBounds = worldBounds;
@@ -31,6 +36,8 @@ public class UserInputHandler implements InputProcessor
 		this.viewportHalfHeight = camera.viewportHeight / 2f;
 		System.out.println("World bounds: " + worldBounds);
 		System.out.println("Viewport: " + camera.viewportWidth + "x" + camera.viewportHeight);
+		
+		this.selectedFeatures = selectedFeatures;
 	}
 	
 	public void update()
@@ -134,6 +141,10 @@ public class UserInputHandler implements InputProcessor
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button)
 	{
+		int column = TerrainFeature.screenXToColumn(screenX);
+		int row = TerrainFeature.screenYToRow(screenY, Gdx.graphics.getHeight());
+		selectedFeatures.add(new GridPoint2(column, row));
+		
 		return false;
 	}
 
@@ -146,6 +157,10 @@ public class UserInputHandler implements InputProcessor
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer)
 	{
+		int column = TerrainFeature.screenXToColumn(screenX);
+		int row = TerrainFeature.screenYToRow(screenY, Gdx.graphics.getHeight());
+		selectedFeatures.add(new GridPoint2(column, row));
+		
 		return false;
 	}
 
