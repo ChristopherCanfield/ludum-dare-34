@@ -30,6 +30,8 @@ public class World
 	private final ArrayList<GridPoint2> blob = new ArrayList<>();
 	private final Random random = new Random();
 	
+	private final ArrayList<BlobObserver> blobObserver = new ArrayList<>();
+	
 	public World()
 	{
 		for (int column = 0; column < TERRAIN_COLUMNS; column++) {
@@ -71,18 +73,22 @@ public class World
 						int emptyCellIndex = random.nextInt(emptyAdjacent.size());
 						GridPoint2 emptyCell = emptyAdjacent.get(emptyCellIndex);
 						if (terrain[emptyCell.x][emptyCell.y] != Terrain.TYPE_BLOB) {
-							terrain[emptyCell.x][emptyCell.y] = Terrain.TYPE_BLOB;
-							blob.add(emptyCell);
-							emptyAdjacent.remove(emptyCell);
-							growthRemaining--;
-							
-							float blobPctOfWorld = (blob.size() / (float)TERRAIN_BLOCK_COUNT) * 100;
-							System.out.format("Blob percentage of world: %.2f%n", blobPctOfWorld);
-							System.out.println("Blob block count: " + blob.size());
-							
-							if (emptyAdjacent.isEmpty()) {
-								System.err.println("emptyAdjacent is now empty; exiting early.");
-								return;
+							double takeoverChance = Terrain.getBlobTakeoverChance(terrain[emptyCell.x][emptyCell.y]);
+							if (takeoverChance >= random.nextDouble()) {
+								terrain[emptyCell.x][emptyCell.y] = Terrain.TYPE_BLOB;
+								blob.add(emptyCell);
+								emptyAdjacent.remove(emptyCell);
+								growthRemaining--;
+								
+								double blobPctOfWorld = blob.size() / (double)TERRAIN_BLOCK_COUNT;
+								for (BlobObserver listener : blobObserver) {
+									listener.onBlobExpanded(blobPctOfWorld);
+								}
+								
+								if (emptyAdjacent.isEmpty()) {
+									System.err.println("emptyAdjacent is now empty; exiting early.");
+									return;
+								}
 							}
 						} else {
 							System.out.println(emptyCell + " is not empty");
@@ -107,6 +113,11 @@ public class World
 	public Rectangle getBounds()
 	{
 		return bounds;
+	}
+	
+	public void addBlobListener(BlobObserver listener)
+	{
+		blobObserver.add(listener);
 	}
 	
 	static List<GridPoint2> getEmptyAdjacentToBlob(World world, ArrayList<GridPoint2> blob)

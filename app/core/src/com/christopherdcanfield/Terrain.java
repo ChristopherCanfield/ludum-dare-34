@@ -20,6 +20,24 @@ public class Terrain
 //				type == TYPE_WATER);
 //		return (byte)type;
 //	}
+	
+	public static double getBlobTakeoverChance(byte block)
+	{
+		switch (block) {
+			case TYPE_GRASS:
+				return 0.75;
+			case TYPE_TALL_GRASS:
+				return 0.65;
+			case TYPE_DIRT:
+				return 0.9;
+			case TYPE_SHALLOW_WATER:
+				return 0.15;
+			case TYPE_DEEP_WATER:
+				return 0.025;
+			default:
+				return 0;
+		}
+	}
 
 	public static int worldColumnToPixelX(int column)
 	{

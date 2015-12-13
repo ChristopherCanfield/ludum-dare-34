@@ -106,7 +106,7 @@ public class Graphics
 				}
 			}
 		}
-		System.out.println("World render time: " + (System.nanoTime() - startTime) / 1_000_000.0);
+//		System.out.println("World render time: " + (System.nanoTime() - startTime) / 1_000_000.0);
 	}
 	
 //	private void renderBlockType(World world, byte blockType)

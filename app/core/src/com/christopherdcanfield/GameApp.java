@@ -1,5 +1,6 @@
 package com.christopherdcanfield;
 
+import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +20,8 @@ import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.math.GridPoint2;
 
 
-public class GameApp extends ApplicationAdapter {
+public class GameApp extends ApplicationAdapter implements BlobObserver
+{
 	private World world;
 	private Graphics graphics;
 	
@@ -40,6 +42,9 @@ public class GameApp extends ApplicationAdapter {
 	private DebugInfo debugInfo;
 	
 	private BitmapFont uiFont;
+	
+	private String blobSizeText;
+	private GlyphLayout blobSizeTextLayout;
 
 	
 	public GameApp()
@@ -52,6 +57,7 @@ public class GameApp extends ApplicationAdapter {
 			batch = new SpriteBatch(5000);
 	
 			world = new World();
+			world.addBlobListener(this);
 			camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight / 2f, 0);
 			camera.update();
@@ -62,9 +68,9 @@ public class GameApp extends ApplicationAdapter {
 			hoverTexture = new Texture("hover.png");
 			
 			{
-				FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/source-code-pro/SourceCodePro-Regular.otf"));
+				FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/source-code-pro/SourceCodePro-Light.otf"));
 				FreeTypeFontParameter fontParams = new FreeTypeFontParameter();
-				fontParams.size = 16;
+				fontParams.size = 14;
 				fontParams.color = new Color(0, 0, 0, 1);
 				uiFont = fontGenerator.generateFont(fontParams);
 				fontGenerator.dispose();
@@ -157,14 +163,15 @@ public class GameApp extends ApplicationAdapter {
 			}
 			
 			/* Draw UI text. */
-			float right = camera.position.x + (camera.viewportWidth / 2f);
-			float top = camera.position.y + (camera.viewportHeight / 2f);
-			
-			batch.begin();
-			batch.enableBlending();
-//			batch.draw(transparentGrayPixelTexture, right - debugInfoLayout.width - 4, bottom, debugInfoLayout.width + 4, debugInfoLayout.height + 8);
-			uiFont.draw(batch, "Blah blah blah", right - 200, top - 200 + 4);
-			batch.end();
+			if (blobSizeTextLayout != null) {
+				float right = camera.position.x + (camera.viewportWidth / 2f);
+				float top = camera.position.y + (camera.viewportHeight / 2f);
+				
+				batch.begin();
+				batch.enableBlending();
+				uiFont.draw(batch, blobSizeText, right - blobSizeTextLayout.width - 8, top - blobSizeTextLayout.height);
+				batch.end();
+			}
 			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -181,5 +188,12 @@ public class GameApp extends ApplicationAdapter {
 	public void dispose()
 	{
 		App.scheduledExecutor.shutdownNow();
+	}
+
+	@Override
+	public void onBlobExpanded(double amount)
+	{
+		blobSizeText = "Blob control: " + DecimalFormat.getPercentInstance().format(amount);
+		blobSizeTextLayout = new GlyphLayout(uiFont, blobSizeText);
 	}
 }

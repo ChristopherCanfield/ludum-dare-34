@@ -49,6 +49,7 @@ public class Launcher extends Application
 		ComboBox<PrettifiedDisplayMode> displayModesComboBox = new ComboBox<>(options);
 		DisplayMode desktopDisplayMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
 		displayModesComboBox.getSelectionModel().select(new PrettifiedDisplayMode(desktopDisplayMode));
+		displayModesComboBox.setTranslateY(200);
 		root.getChildren().add(displayModesComboBox);
 		
 		Button startGameButton = new Button("Launch Game");
