@@ -8,31 +8,23 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.christopherdcanfield.GameApp;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.VPos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
@@ -45,7 +37,6 @@ public class Launcher extends Application
 
 	@Override
 	public void start(Stage stage) {
-//		root = new Group();
 		launcherWindow = stage;
 		
 		root = new GridPane();
@@ -121,7 +112,6 @@ public class Launcher extends Application
 		Button startGameButton = new Button("Start Game");
 		startGameButton.setTextFill(Color.SEAGREEN);
 		startGameButton.setFont(Font.font(null, FontWeight.BOLD, 14));
-//		startGameButton.setBackground(new Background(new BackgroundFill(Color.MEDIUMSEAGREEN, new CornerRadii(5), new Insets(0, 0, 0, 0))));
 		GridPane.setHalignment(startGameButton, HPos.CENTER);
 		root.add(startGameButton, 0, 7);
 		startGameButton.setOnAction(new EventHandler<ActionEvent>() {
