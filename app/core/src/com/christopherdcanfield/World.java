@@ -30,13 +30,7 @@ public class World
 	{
 		for (int column = 0; column < COLUMNS; column++) {
 			for (int row = 0; row < ROWS; row++) {
-//				if ((column + row) % 5 == 0) {
-//					world[column][row] = Block.TYPE_SHALLOW_WATER;
-//				} else if ((column + row) % 4 == 0) {
-//					world[column][row] = Block.TYPE_DIRT;
-//				} else {
-//					world[column][row] = Block.TYPE_GRASS;
-//				}
+
 			}
 		}
 		
@@ -73,7 +67,6 @@ public class World
 						int emptyCellIndex = random.nextInt(emptyAdjacent.size());
 						GridPoint2 emptyCell = emptyAdjacent.get(emptyCellIndex);
 						if (world[emptyCell.x][emptyCell.y] != Block.TYPE_BLOB) {
-//							System.out.println("Adding new blob: " + emptyCell);
 							world[emptyCell.x][emptyCell.y] = Block.TYPE_BLOB;
 							blob.add(emptyCell);
 							emptyAdjacent.remove(emptyCell);
