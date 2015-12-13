@@ -25,13 +25,13 @@ public class Terrain
 	{
 		switch (block) {
 			case TYPE_GRASS:
-				return 0.75;
+				return 0.85;
 			case TYPE_TALL_GRASS:
-				return 0.65;
+				return 0.75;
 			case TYPE_DIRT:
-				return 0.9;
+				return 0.95;
 			case TYPE_SHALLOW_WATER:
-				return 0.15;
+				return 0.1;
 			case TYPE_DEEP_WATER:
 				return 0.025;
 			default:

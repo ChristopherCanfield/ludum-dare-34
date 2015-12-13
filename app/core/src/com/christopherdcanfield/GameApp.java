@@ -166,18 +166,19 @@ public class GameApp extends ApplicationAdapter implements BlobObserver
 					world.isTerrainFeatureWithinWorld(hoveredBlock.terrainFeature.x, hoveredBlock.terrainFeature.y))
 			{
 				byte terrainBlock = world.getTerrain()[hoveredBlock.terrain.x][hoveredBlock.terrain.y];
-				double blobResistance = ((1 - Terrain.getBlobTakeoverChance(terrainBlock)) * 100);
-				hoverText = Terrain.toString(terrainBlock) + (terrainBlock != Terrain.TYPE_BLOB ? ("\n" + blobResistance + "% resistance") : "");
+				
+				String blobResistance = DecimalFormat.getPercentInstance().format(1 - Terrain.getBlobTakeoverChance(terrainBlock));
+				hoverText = Terrain.toString(terrainBlock) + (terrainBlock != Terrain.TYPE_BLOB ? ("\n" + blobResistance + " resistance") : "");
 				batch.begin();
 				batch.enableBlending();
 				hoverFont.draw(batch, hoverText, cameraLeft + Gdx.input.getX() - 10, cameraTop - Gdx.input.getY() - 30);
 				batch.end();
 				
-				batch.begin();
-				int x = TerrainFeature.worldColumnToPixelX(hoveredBlock.terrainFeature.x);
-				int y = TerrainFeature.worldRowToPixelY(hoveredBlock.terrainFeature.y);
-				batch.draw(hoverTexture, x, y, TerrainFeature.PIXELS_WIDTH, TerrainFeature.PIXELS_HEIGHT);
-				batch.end();
+//				batch.begin();
+//				int x = TerrainFeature.worldColumnToPixelX(hoveredBlock.terrainFeature.x);
+//				int y = TerrainFeature.worldRowToPixelY(hoveredBlock.terrainFeature.y);
+//				batch.draw(hoverTexture, x, y, TerrainFeature.PIXELS_WIDTH, TerrainFeature.PIXELS_HEIGHT);
+//				batch.end();
 			}
 			
 			/* Draw debug text. */
