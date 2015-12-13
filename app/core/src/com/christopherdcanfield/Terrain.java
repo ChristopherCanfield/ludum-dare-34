@@ -68,4 +68,24 @@ public class Terrain
 	{
 		return y / PIXELS_HEIGHT;
 	}
+	
+	public static String toString(byte block)
+	{
+		switch (block) {
+			case TYPE_GRASS:
+				return "Grass";
+			case TYPE_TALL_GRASS:
+				return "Tall Grass";
+			case TYPE_DIRT:
+				return "Dirt";
+			case TYPE_SHALLOW_WATER:
+				return "Shallow Water";
+			case TYPE_DEEP_WATER:
+				return "Deep Water";
+			case TYPE_BLOB:
+				return "Blob";
+			default:
+				throw new IllegalArgumentException("Unknown terrain block type: " + block);
+		}
+	}
 }

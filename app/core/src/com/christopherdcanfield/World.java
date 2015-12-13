@@ -15,12 +15,12 @@ import com.google.common.math.IntMath;
 
 public class World
 {
-	public static final int TERRAIN_COLUMNS = 1000;
-	public static final int TERRAIN_ROWS = 1000;
-	public static final int TERRAIN_BLOCK_COUNT = TERRAIN_COLUMNS * TERRAIN_ROWS;
+	public static final int FEATURES_COLUMNS = 2000 / TerrainFeature.PIXELS_WIDTH;
+	public static final int FEATURES_ROWS = 2000 / TerrainFeature.PIXELS_WIDTH;
 	
-	public static final int FEATURES_COLUMNS = TERRAIN_COLUMNS * Terrain.PIXELS_WIDTH / TerrainFeature.PIXELS_WIDTH;
-	public static final int FEATURES_ROWS = TERRAIN_ROWS * Terrain.PIXELS_HEIGHT / TerrainFeature.PIXELS_HEIGHT;
+	public static final int TERRAIN_COLUMNS = FEATURES_COLUMNS * TerrainFeature.PIXELS_WIDTH / Terrain.PIXELS_WIDTH;
+	public static final int TERRAIN_ROWS = FEATURES_ROWS * TerrainFeature.PIXELS_HEIGHT / Terrain.PIXELS_HEIGHT;
+	public static final int TERRAIN_BLOCK_COUNT = TERRAIN_COLUMNS * TERRAIN_ROWS;
 	
 	private final byte[][] terrain = new byte[TERRAIN_COLUMNS][TERRAIN_ROWS];
 	private final byte[][] features = new byte[FEATURES_COLUMNS][FEATURES_ROWS];
@@ -110,9 +110,24 @@ public class World
 		return terrain;
 	}
 	
+	public byte[][] getFeatures()
+	{
+		return features;
+	}
+	
 	public Rectangle getBounds()
 	{
 		return bounds;
+	}
+	
+	public boolean isTerrainWithinWorld(int column, int row)
+	{
+		return column >= 0 && column < terrain.length && row >= 0 && row < terrain[0].length;
+	}
+	
+	public boolean isTerrainFeatureWithinWorld(int column, int row)
+	{
+		return column >= 0 && column < features.length && row >= 0 && row < features[0].length;
 	}
 	
 	public void addBlobListener(BlobObserver listener)

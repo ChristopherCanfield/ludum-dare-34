@@ -30,7 +30,8 @@ public class GameApp extends ApplicationAdapter implements BlobObserver
 	
 	private UserInputHandler inputHandler;
 	private Set<GridPoint2> selectedFeatures;
-	private GridPoint2[] hoveredBlock = new GridPoint2[1];
+	private HoveredBlock hoveredBlock = new HoveredBlock();
+	private String hoverText;
 	
 	private Texture transparentGrayPixelTexture;
 	private Texture selectedTexture;
@@ -42,6 +43,7 @@ public class GameApp extends ApplicationAdapter implements BlobObserver
 	private DebugInfo debugInfo;
 	
 	private BitmapFont uiFont;
+	private BitmapFont hoverFont;
 	
 	private String blobSizeText;
 	private GlyphLayout blobSizeTextLayout;
@@ -76,9 +78,15 @@ public class GameApp extends ApplicationAdapter implements BlobObserver
 				fontParams.size = 14;
 				fontParams.color = new Color(0, 0, 0, 1);
 				uiFont = fontGenerator.generateFont(fontParams);
+				
+				fontParams = new FreeTypeFontParameter();
+				fontParams.size = 9;
+				fontParams.color = new Color(60/255f, 60/255f, 60/255f, 1);
+				hoverFont = fontGenerator.generateFont(fontParams);
+				
 				fontGenerator.dispose();
 			}
-			
+						
 			kingdomInfoText = "Ducats: 500\nCitizens: 1000\nDead Citizens: 0";
 			kingdomInfoTextLayout = new GlyphLayout(uiFont, kingdomInfoText);
 			
@@ -152,11 +160,22 @@ public class GameApp extends ApplicationAdapter implements BlobObserver
 			}
 			batch.end();
 			
-			/* Render hovered block. */
-			if (hoveredBlock[0] != null) {
+			/* Render hovered block and text. */
+			if (hoveredBlock.isSet() &&
+					world.isTerrainWithinWorld(hoveredBlock.terrain.x, hoveredBlock.terrain.y) &&
+					world.isTerrainFeatureWithinWorld(hoveredBlock.terrainFeature.x, hoveredBlock.terrainFeature.y))
+			{
+				byte terrainBlock = world.getTerrain()[hoveredBlock.terrain.x][hoveredBlock.terrain.y];
+				double blobResistance = ((1 - Terrain.getBlobTakeoverChance(terrainBlock)) * 100);
+				hoverText = Terrain.toString(terrainBlock) + (terrainBlock != Terrain.TYPE_BLOB ? ("\n" + blobResistance + "% resistance") : "");
 				batch.begin();
-				int x = TerrainFeature.worldColumnToPixelX(hoveredBlock[0].x);
-				int y = TerrainFeature.worldRowToPixelY(hoveredBlock[0].y);
+				batch.enableBlending();
+				hoverFont.draw(batch, hoverText, cameraLeft + Gdx.input.getX() - 10, cameraTop - Gdx.input.getY() - 30);
+				batch.end();
+				
+				batch.begin();
+				int x = TerrainFeature.worldColumnToPixelX(hoveredBlock.terrainFeature.x);
+				int y = TerrainFeature.worldRowToPixelY(hoveredBlock.terrainFeature.y);
 				batch.draw(hoverTexture, x, y, TerrainFeature.PIXELS_WIDTH, TerrainFeature.PIXELS_HEIGHT);
 				batch.end();
 			}

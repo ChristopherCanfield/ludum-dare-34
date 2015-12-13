@@ -21,14 +21,14 @@ public class UserInputHandler implements InputProcessor
 	private static final float cameraMoveSpeedFast = cameraMoveSpeed * 4;
 	
 	private final Set<GridPoint2> selectedFeatures;
-	private final GridPoint2[] hoveredBlock;
+	private final HoveredBlock hoveredBlock;
 	
 	private boolean moveCameraLeft;
 	private boolean moveCameraRight;
 	private boolean moveCameraUp;
 	private boolean moveCameraDown;
 	
-	public UserInputHandler(OrthographicCamera camera, Rectangle worldBounds, Set<GridPoint2> selectedFeatures, GridPoint2[] hoveredBlock)
+	public UserInputHandler(OrthographicCamera camera, Rectangle worldBounds, Set<GridPoint2> selectedFeatures, HoveredBlock hoveredBlock)
 	{
 		this.camera = camera;
 		this.worldBounds = worldBounds;
@@ -143,11 +143,11 @@ public class UserInputHandler implements InputProcessor
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button)
 	{
-		int left = (int)(camera.position.x - (camera.viewportWidth / 2f));
-		int bottom = (int)(camera.position.y - (camera.viewportHeight / 2f));
-		int column = TerrainFeature.screenXToColumn(screenX + left);
-		int row = TerrainFeature.screenYToRow(screenY - bottom, Gdx.graphics.getHeight());
-		selectedFeatures.add(new GridPoint2(column, row));
+//		int left = (int)(camera.position.x - (camera.viewportWidth / 2f));
+//		int bottom = (int)(camera.position.y - (camera.viewportHeight / 2f));
+//		int column = TerrainFeature.screenXToColumn(screenX + left);
+//		int row = TerrainFeature.screenYToRow(screenY - bottom, Gdx.graphics.getHeight());
+//		selectedFeatures.add(new GridPoint2(column, row));
 		
 		return false;
 	}
@@ -161,11 +161,11 @@ public class UserInputHandler implements InputProcessor
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer)
 	{
-		int left = (int)(camera.position.x - (camera.viewportWidth / 2f));
-		int bottom = (int)(camera.position.y - (camera.viewportHeight / 2f));
-		int column = TerrainFeature.screenXToColumn(screenX + left);
-		int row = TerrainFeature.screenYToRow(screenY - bottom, Gdx.graphics.getHeight());
-		selectedFeatures.add(new GridPoint2(column, row));
+//		int left = (int)(camera.position.x - (camera.viewportWidth / 2f));
+//		int bottom = (int)(camera.position.y - (camera.viewportHeight / 2f));
+//		int column = TerrainFeature.screenXToColumn(screenX + left);
+//		int row = TerrainFeature.screenYToRow(screenY - bottom, Gdx.graphics.getHeight());
+//		selectedFeatures.add(new GridPoint2(column, row));
 		
 		return false;
 	}
@@ -175,9 +175,14 @@ public class UserInputHandler implements InputProcessor
 	{
 		int left = (int)(camera.position.x - (camera.viewportWidth / 2f));
 		int bottom = (int)(camera.position.y - (camera.viewportHeight / 2f));
-		int column = TerrainFeature.screenXToColumn(screenX + left);
-		int row = TerrainFeature.screenYToRow(screenY - bottom, Gdx.graphics.getHeight());
-		hoveredBlock[0] = new GridPoint2(column, row);
+		
+		int terrainFeatureColumn = TerrainFeature.screenXToColumn(screenX + left);
+		int terrainFeatureRow = TerrainFeature.screenYToRow(screenY - bottom, Gdx.graphics.getHeight());
+		hoveredBlock.terrainFeature = new GridPoint2(terrainFeatureColumn, terrainFeatureRow);
+		
+		int terrainColumn = Terrain.screenXToColumn(screenX + left);
+		int terrainRow = Terrain.screenYToRow(screenY - bottom, Gdx.graphics.getHeight());
+		hoveredBlock.terrain = new GridPoint2(terrainColumn, terrainRow);
 		
 		return false;
 	}
