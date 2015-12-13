@@ -11,16 +11,20 @@ import java.util.stream.Collectors;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Timer;
 import com.google.common.math.IntMath;
 
 public class World
 {
-	public static final int COLUMNS = 1000;
-	public static final int ROWS = 1000;
-	public static final int BLOCK_COUNT = COLUMNS * ROWS;
+	public static final int TERRAIN_COLUMNS = 1000;
+	public static final int TERRAIN_ROWS = 1000;
+	public static final int TERRAIN_BLOCK_COUNT = TERRAIN_COLUMNS * TERRAIN_ROWS;
 	
-	private final byte[][] world = new byte[COLUMNS][ROWS];
+	public static final int FEATURES_COLUMNS = TERRAIN_COLUMNS * Terrain.PIXELS_WIDTH / TerrainFeature.PIXELS_WIDTH;
+	public static final int FEATURES_ROWS = TERRAIN_ROWS * Terrain.PIXELS_HEIGHT / TerrainFeature.PIXELS_HEIGHT;
+	
+	private final byte[][] terrain = new byte[TERRAIN_COLUMNS][TERRAIN_ROWS];
+	private final byte[][] features = new byte[FEATURES_COLUMNS][FEATURES_ROWS];
+	
 	private final Rectangle bounds;
 	
 	private final ArrayList<GridPoint2> blob = new ArrayList<>();
@@ -28,26 +32,26 @@ public class World
 	
 	public World()
 	{
-		for (int column = 0; column < COLUMNS; column++) {
-			for (int row = 0; row < ROWS; row++) {
+		for (int column = 0; column < TERRAIN_COLUMNS; column++) {
+			for (int row = 0; row < TERRAIN_ROWS; row++) {
 
 			}
 		}
 		
-		for (int column = 0; column < COLUMNS; column++) {
-			world[column][0] = Block.TYPE_DEEP_WATER;
-			world[column][ROWS-1] = Block.TYPE_DEEP_WATER;
+		for (int column = 0; column < TERRAIN_COLUMNS; column++) {
+			terrain[column][0] = Terrain.TYPE_DEEP_WATER;
+			terrain[column][TERRAIN_ROWS-1] = Terrain.TYPE_DEEP_WATER;
 		}
 		
-		for (int row = 0; row < ROWS; row++) {
-			world[0][row] = Block.TYPE_DEEP_WATER;
-			world[COLUMNS-1][row] = Block.TYPE_DEEP_WATER;
+		for (int row = 0; row < TERRAIN_ROWS; row++) {
+			terrain[0][row] = Terrain.TYPE_DEEP_WATER;
+			terrain[TERRAIN_COLUMNS-1][row] = Terrain.TYPE_DEEP_WATER;
 		}
 		
-		bounds = new Rectangle(0, 0, COLUMNS * Block.PIXELS_WIDTH, ROWS * Block.PIXELS_HEIGHT);
+		bounds = new Rectangle(0, 0, TERRAIN_COLUMNS * Terrain.PIXELS_WIDTH, TERRAIN_ROWS * Terrain.PIXELS_HEIGHT);
 		
-		blob.add(new GridPoint2(COLUMNS - 2, 1));
-		world[COLUMNS-2][1] = Block.TYPE_BLOB;
+		blob.add(new GridPoint2(TERRAIN_COLUMNS - 2, 1));
+		terrain[TERRAIN_COLUMNS-2][1] = Terrain.TYPE_BLOB;
 		
 		App.scheduledExecutor.scheduleAtFixedRate(() -> {
 			try {
@@ -66,13 +70,13 @@ public class World
 					{
 						int emptyCellIndex = random.nextInt(emptyAdjacent.size());
 						GridPoint2 emptyCell = emptyAdjacent.get(emptyCellIndex);
-						if (world[emptyCell.x][emptyCell.y] != Block.TYPE_BLOB) {
-							world[emptyCell.x][emptyCell.y] = Block.TYPE_BLOB;
+						if (terrain[emptyCell.x][emptyCell.y] != Terrain.TYPE_BLOB) {
+							terrain[emptyCell.x][emptyCell.y] = Terrain.TYPE_BLOB;
 							blob.add(emptyCell);
 							emptyAdjacent.remove(emptyCell);
 							growthRemaining--;
 							
-							float blobPctOfWorld = (blob.size() / (float)BLOCK_COUNT) * 100;
+							float blobPctOfWorld = (blob.size() / (float)TERRAIN_BLOCK_COUNT) * 100;
 							System.out.format("Blob percentage of world: %.2f%n", blobPctOfWorld);
 							System.out.println("Blob block count: " + blob.size());
 							
@@ -95,9 +99,9 @@ public class World
 		}, 1000, 175, TimeUnit.MILLISECONDS);
 	}
 	
-	public byte[][] get()
+	public byte[][] getTerrain()
 	{
-		return world;
+		return terrain;
 	}
 	
 	public Rectangle getBounds()
@@ -107,25 +111,25 @@ public class World
 	
 	static List<GridPoint2> getEmptyAdjacentToBlob(World world, ArrayList<GridPoint2> blob)
 	{
-		final byte[][] blocks = world.get();
+		final byte[][] blocks = world.getTerrain();
 		
 		List<GridPoint2> blobsWithEmptyAdjacent = blob.parallelStream()
 				.filter(blobPosition -> {
 					boolean notFirstColumn = blobPosition.x > 0;
-					boolean notLastColumn = blobPosition.x < World.COLUMNS - 1;
+					boolean notLastColumn = blobPosition.x < World.TERRAIN_COLUMNS - 1;
 					boolean notFirstRow = blobPosition.y > 0;
-					boolean notLastRow = blobPosition.y < World.ROWS - 1;
+					boolean notLastRow = blobPosition.y < World.TERRAIN_ROWS - 1;
 					
-					if (notFirstColumn && blocks[blobPosition.x-1][blobPosition.y] != Block.TYPE_BLOB) {
+					if (notFirstColumn && blocks[blobPosition.x-1][blobPosition.y] != Terrain.TYPE_BLOB) {
 						return true;
 					}
-					if (notLastColumn && blocks[blobPosition.x+1][blobPosition.y] != Block.TYPE_BLOB) {
+					if (notLastColumn && blocks[blobPosition.x+1][blobPosition.y] != Terrain.TYPE_BLOB) {
 						return true;
 					}
-					if (notFirstRow && blocks[blobPosition.x][blobPosition.y-1] != Block.TYPE_BLOB) {
+					if (notFirstRow && blocks[blobPosition.x][blobPosition.y-1] != Terrain.TYPE_BLOB) {
 						return true;
 					}
-					if (notLastRow && blocks[blobPosition.x][blobPosition.y+1] != Block.TYPE_BLOB) {
+					if (notLastRow && blocks[blobPosition.x][blobPosition.y+1] != Terrain.TYPE_BLOB) {
 						return true;
 					}
 					return false;
@@ -136,20 +140,20 @@ public class World
 		HashSet<GridPoint2> emptyAdjacent = new HashSet<>();
 		for (GridPoint2 blobPosition : blobsWithEmptyAdjacent) {
 			boolean notFirstColumn = blobPosition.x > 0;
-			boolean notLastColumn = blobPosition.x < World.COLUMNS - 1;
+			boolean notLastColumn = blobPosition.x < World.TERRAIN_COLUMNS - 1;
 			boolean notFirstRow = blobPosition.y > 0;
-			boolean notLastRow = blobPosition.y < World.ROWS - 1;
+			boolean notLastRow = blobPosition.y < World.TERRAIN_ROWS - 1;
 			
-			if (notFirstColumn && blocks[blobPosition.x - 1][blobPosition.y] != Block.TYPE_BLOB) {
+			if (notFirstColumn && blocks[blobPosition.x - 1][blobPosition.y] != Terrain.TYPE_BLOB) {
 				emptyAdjacent.add(new GridPoint2(blobPosition.x-1, blobPosition.y));
 			}
-			if (notLastColumn && blocks[blobPosition.x + 1][blobPosition.y] != Block.TYPE_BLOB) {
+			if (notLastColumn && blocks[blobPosition.x + 1][blobPosition.y] != Terrain.TYPE_BLOB) {
 				emptyAdjacent.add(new GridPoint2(blobPosition.x+1, blobPosition.y));
 			}
-			if (notFirstRow && blocks[blobPosition.x][blobPosition.y - 1] != Block.TYPE_BLOB) {
+			if (notFirstRow && blocks[blobPosition.x][blobPosition.y - 1] != Terrain.TYPE_BLOB) {
 				emptyAdjacent.add(new GridPoint2(blobPosition.x, blobPosition.y-1));
 			}
-			if (notLastRow && blocks[blobPosition.x][blobPosition.y + 1] != Block.TYPE_BLOB) {
+			if (notLastRow && blocks[blobPosition.x][blobPosition.y + 1] != Terrain.TYPE_BLOB) {
 				emptyAdjacent.add(new GridPoint2(blobPosition.x, blobPosition.y+1));
 			}
 		}

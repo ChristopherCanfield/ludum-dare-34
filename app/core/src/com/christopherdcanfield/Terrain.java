@@ -1,6 +1,6 @@
 package com.christopherdcanfield;
 
-public class Block
+public class Terrain
 {
 	public static final int PIXELS_WIDTH = 2;
 	public static final int PIXELS_HEIGHT = 2;
@@ -39,5 +39,15 @@ public class Block
 	public static int screenYToRow(int screenY, int screenHeightPixels)
 	{
 		return (screenHeightPixels - screenY) / PIXELS_HEIGHT;
+	}
+	
+	public static int worldXToColumn(int x)
+	{
+		return x / PIXELS_WIDTH;
+	}
+	
+	public static int worldYToRow(int y)
+	{
+		return y / PIXELS_HEIGHT;
 	}
 }

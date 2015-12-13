@@ -51,12 +51,12 @@ public class Graphics
 	public void render(World world)
 	{
 		long startTime = System.nanoTime();
-		byte[][] blocks = world.get();
+		byte[][] blocks = world.getTerrain();
 
-		float left = camera.position.x - viewportHalfWidth;
-		float right = camera.position.x + viewportHalfWidth;
-		float top = camera.position.y + viewportHalfHeight;
-		float bottom = camera.position.y - viewportHalfHeight;
+		int left = (int)(camera.position.x - viewportHalfWidth);
+		int right = (int)(camera.position.x + viewportHalfWidth);
+		int bottom = (int)(camera.position.y - viewportHalfHeight);
+		int top = (int)(camera.position.y + viewportHalfHeight);
 
 		// Commented out for now, since this decreased, rather than increased, the fps.
 //		renderBlockType(world, Block.TYPE_BLOB);
@@ -66,38 +66,43 @@ public class Graphics
 //		renderBlockType(world, Block.TYPE_SHALLOW_WATER);
 //		renderBlockType(world, Block.TYPE_TALL_GRASS);
 		
-		for (int column = 0; column < blocks.length; column++) {
-			for (int row = 0; row < blocks[0].length; row++) {
-				int x = Block.worldColumnToPixelX(column);
-				int y = Block.worldRowToPixelY(row);
+		final int startColumn = Terrain.worldXToColumn(left);
+		final int endColumn = Terrain.worldXToColumn(right);
+		final int startRow = Terrain.worldYToRow(bottom);
+		final int endRow = Terrain.worldYToRow(top);
+		
+		for (int column = startColumn; column < endColumn; column++) {
+			for (int row = startRow; row < endRow; row++) {
+				int x = Terrain.worldColumnToPixelX(column);
+				int y = Terrain.worldRowToPixelY(row);
 
 				if (x >= left && x <= right && y <= top && y >= bottom)
 				{
 					final Texture texture;
 					switch (blocks[column][row]) {
-						case Block.TYPE_DIRT:
+						case Terrain.TYPE_DIRT:
 							texture = dirtTexture;
 							break;
-						case Block.TYPE_GRASS:
+						case Terrain.TYPE_GRASS:
 							texture = grassTexture;
 							break;
-						case Block.TYPE_TALL_GRASS:
+						case Terrain.TYPE_TALL_GRASS:
 							texture = tallGrassTexture;
 							break;
-						case Block.TYPE_SHALLOW_WATER:
+						case Terrain.TYPE_SHALLOW_WATER:
 							texture = shallowWaterTexture;
 							break;
-						case Block.TYPE_DEEP_WATER:
+						case Terrain.TYPE_DEEP_WATER:
 							texture = deepWaterTexture;
 							break;
-						case Block.TYPE_BLOB:
+						case Terrain.TYPE_BLOB:
 							texture = blobTexture;
 							break;
 						default:
 							throw new RuntimeException("Unknown block type: " + blocks[column][row]);
 					}
 
-					batch.draw(texture, x, y, Block.PIXELS_WIDTH, Block.PIXELS_HEIGHT);
+					batch.draw(texture, x, y, Terrain.PIXELS_WIDTH, Terrain.PIXELS_HEIGHT);
 				}
 			}
 		}
