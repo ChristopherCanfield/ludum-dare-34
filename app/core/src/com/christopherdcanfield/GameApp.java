@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -104,7 +105,8 @@ public class GameApp extends ApplicationAdapter implements BlobObserver
 			
 			selectedFeatures = new HashSet<>();
 			inputHandler = new UserInputHandler(camera, world.getBounds(), selectedFeatures, hoveredBlock);
-			Gdx.input.setInputProcessor(inputHandler);
+			InputMultiplexer inputMultiplexer = new InputMultiplexer(inputHandler);
+			Gdx.input.setInputProcessor(inputMultiplexer);
 			
 			App.scheduledExecutor.scheduleAtFixedRate(() -> {
 				Gdx.app.postRunnable(() -> {
