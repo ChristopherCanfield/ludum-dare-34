@@ -39,6 +39,9 @@ public class GameApp extends ApplicationAdapter {
 	private GlyphLayout debugInfoLayout;
 	private DebugInfo debugInfo;
 	
+	private BitmapFont uiFont;
+
+	
 	public GameApp()
 	{
 	}
@@ -58,12 +61,23 @@ public class GameApp extends ApplicationAdapter {
 			selectedTexture = new Texture("selected.png");
 			hoverTexture = new Texture("hover.png");
 			
-			FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/source-code-pro/SourceCodePro-Light.otf"));
-			FreeTypeFontParameter fontParams = new FreeTypeFontParameter();
-			fontParams.size = 10;
-			fontParams.color = new Color(0, 0, 0, 1);
-			debugInfoFont = fontGenerator.generateFont(fontParams);
-			fontGenerator.dispose();
+			{
+				FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/source-code-pro/SourceCodePro-Regular.otf"));
+				FreeTypeFontParameter fontParams = new FreeTypeFontParameter();
+				fontParams.size = 16;
+				fontParams.color = new Color(0, 0, 0, 1);
+				uiFont = fontGenerator.generateFont(fontParams);
+				fontGenerator.dispose();
+			}
+			
+			{
+				FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/source-code-pro/SourceCodePro-Light.otf"));
+				FreeTypeFontParameter fontParams = new FreeTypeFontParameter();
+				fontParams.size = 10;
+				fontParams.color = new Color(0, 0, 0, 1);
+				debugInfoFont = fontGenerator.generateFont(fontParams);
+				fontGenerator.dispose();
+			}
 
 			debugInfo = new DebugInfo(batch);
 			GLProfiler.enable();
@@ -130,7 +144,7 @@ public class GameApp extends ApplicationAdapter {
 				batch.end();
 			}
 			
-			/* Draw text. */
+			/* Draw debug text. */
 			if (debugInfo != null && debugInfoLayout != null) {
 				float right = camera.position.x + (camera.viewportWidth / 2f);
 				float bottom = camera.position.y - (camera.viewportHeight / 2f);
@@ -141,6 +155,16 @@ public class GameApp extends ApplicationAdapter {
 				debugInfoFont.draw(batch, debugInfoText, right - debugInfoLayout.width, bottom + debugInfoLayout.height + 4);
 				batch.end();
 			}
+			
+			/* Draw UI text. */
+			float right = camera.position.x + (camera.viewportWidth / 2f);
+			float top = camera.position.y + (camera.viewportHeight / 2f);
+			
+			batch.begin();
+			batch.enableBlending();
+//			batch.draw(transparentGrayPixelTexture, right - debugInfoLayout.width - 4, bottom, debugInfoLayout.width + 4, debugInfoLayout.height + 8);
+			uiFont.draw(batch, "Blah blah blah", right - 200, top - 200 + 4);
+			batch.end();
 			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
