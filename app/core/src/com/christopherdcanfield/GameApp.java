@@ -39,7 +39,7 @@ public class GameApp extends ApplicationAdapter {
 	@Override
 	public void create() {
 		try {
-			batch = new SpriteBatch();
+			batch = new SpriteBatch(5000);
 	
 			world = new World();
 			camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -82,28 +82,38 @@ public class GameApp extends ApplicationAdapter {
 
 	@Override
 	public void render() {
-		inputHandler.update();
-		camera.update();
-		batch.setProjectionMatrix(camera.combined);
-		
-		batch.totalRenderCalls = 0;
-		GLProfiler.reset();
-		
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		batch.disableBlending();
-		batch.begin();
-		graphics.render(world);
-		batch.end();
-		
-		/* Draw text. */
-		if (debugInfo != null && debugInfoLayout != null) {
+		try {
+			inputHandler.update();
+			camera.update();
+			batch.setProjectionMatrix(camera.combined);
+			
+			batch.totalRenderCalls = 0;
+			GLProfiler.reset();
+			
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			
+			batch.disableBlending();
 			batch.begin();
-			batch.enableBlending();
-			batch.draw(transparentGrayPixel, Gdx.graphics.getWidth() - debugInfoLayout.width - 4, 0, debugInfoLayout.width + 4, debugInfoLayout.height + 8);
-			debugInfoFont.draw(batch, debugInfoText, Gdx.graphics.getWidth() - debugInfoLayout.width, debugInfoLayout.height + 4);
+			graphics.render(world);
 			batch.end();
+			
+			/* Draw text. */
+			if (debugInfo != null && debugInfoLayout != null) {
+				batch.begin();
+				batch.enableBlending();
+				batch.draw(transparentGrayPixel, Gdx.graphics.getWidth() - debugInfoLayout.width - 4, 0, debugInfoLayout.width + 4, debugInfoLayout.height + 8);
+				debugInfoFont.draw(batch, debugInfoText, Gdx.graphics.getWidth() - debugInfoLayout.width, debugInfoLayout.height + 4);
+				batch.end();
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			
+			batch.dispose();
+			graphics.dispose();
+			
+			Gdx.app.exit();
 		}
 	}
 	

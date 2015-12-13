@@ -50,18 +50,27 @@ public class Graphics
 
 	public void render(World world)
 	{
+		long startTime = System.nanoTime();
 		byte[][] blocks = world.get();
+
+		float left = camera.position.x - viewportHalfWidth;
+		float right = camera.position.x + viewportHalfWidth;
+		float top = camera.position.y + viewportHalfHeight;
+		float bottom = camera.position.y - viewportHalfHeight;
+
+		// Commented out for now, since this decreased, rather than increased, the fps.
+//		renderBlockType(world, Block.TYPE_BLOB);
+//		renderBlockType(world, Block.TYPE_DEEP_WATER);
+//		renderBlockType(world, Block.TYPE_DIRT);
+//		renderBlockType(world, Block.TYPE_GRASS);
+//		renderBlockType(world, Block.TYPE_SHALLOW_WATER);
+//		renderBlockType(world, Block.TYPE_TALL_GRASS);
 		
 		for (int column = 0; column < blocks.length; column++) {
 			for (int row = 0; row < blocks[0].length; row++) {
 				int x = Block.worldColumnToPixelX(column);
 				int y = Block.worldRowToPixelY(row);
-				
-				float left = camera.position.x - viewportHalfWidth;
-				float right = camera.position.x + viewportHalfWidth;
-				float top = camera.position.y + viewportHalfHeight;
-				float bottom = camera.position.y - viewportHalfHeight;
-				
+
 				if (x >= left && x <= right && y <= top && y >= bottom)
 				{
 					final Texture texture;
@@ -87,10 +96,59 @@ public class Graphics
 						default:
 							throw new RuntimeException("Unknown block type: " + blocks[column][row]);
 					}
-					
+
 					batch.draw(texture, x, y, Block.PIXELS_WIDTH, Block.PIXELS_HEIGHT);
 				}
 			}
 		}
+		System.out.println("World render time: " + (System.nanoTime() - startTime) / 1_000_000.0);
 	}
+	
+//	private void renderBlockType(World world, byte blockType)
+//	{
+//		byte[][] blocks = world.get();
+//
+//		final float left = camera.position.x - viewportHalfWidth;
+//		final float right = camera.position.x + viewportHalfWidth;
+//		final float top = camera.position.y + viewportHalfHeight;
+//		final float bottom = camera.position.y - viewportHalfHeight;
+//
+//		for (int column = 0; column < blocks.length; column++) {
+//			for (int row = 0; row < blocks[0].length; row++) {
+//				if (blocks[column][row] == blockType) {
+//					int x = Block.worldColumnToPixelX(column);
+//					int y = Block.worldRowToPixelY(row);
+//
+//					if (x >= left && x <= right && y <= top && y >= bottom)
+//					{
+//						final Texture texture;
+//						switch (blockType) {
+//							case Block.TYPE_DIRT:
+//								texture = dirtTexture;
+//								break;
+//							case Block.TYPE_GRASS:
+//								texture = grassTexture;
+//								break;
+//							case Block.TYPE_TALL_GRASS:
+//								texture = tallGrassTexture;
+//								break;
+//							case Block.TYPE_SHALLOW_WATER:
+//								texture = shallowWaterTexture;
+//								break;
+//							case Block.TYPE_DEEP_WATER:
+//								texture = deepWaterTexture;
+//								break;
+//							case Block.TYPE_BLOB:
+//								texture = blobTexture;
+//								break;
+//							default:
+//								throw new RuntimeException("Unknown block type: " + blocks[column][row]);
+//						}
+//
+//						batch.draw(texture, x, y, Block.PIXELS_WIDTH, Block.PIXELS_HEIGHT);
+//					}
+//				}
+//			}
+//		}
+//	}
 }
