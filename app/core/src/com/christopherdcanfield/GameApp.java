@@ -45,6 +45,9 @@ public class GameApp extends ApplicationAdapter implements BlobObserver
 	
 	private String blobSizeText;
 	private GlyphLayout blobSizeTextLayout;
+	
+	private String kingdomInfoText;
+	private GlyphLayout kingdomInfoTextLayout;
 
 	
 	public GameApp()
@@ -75,6 +78,9 @@ public class GameApp extends ApplicationAdapter implements BlobObserver
 				uiFont = fontGenerator.generateFont(fontParams);
 				fontGenerator.dispose();
 			}
+			
+			kingdomInfoText = "Ducats: 500\nCitizens: 1000\nDead Citizens: 0";
+			kingdomInfoTextLayout = new GlyphLayout(uiFont, kingdomInfoText);
 			
 			{
 				FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/source-code-pro/SourceCodePro-Light.otf"));
@@ -117,6 +123,11 @@ public class GameApp extends ApplicationAdapter implements BlobObserver
 			camera.update();
 			batch.setProjectionMatrix(camera.combined);
 			
+			final float cameraLeft = camera.position.x - (camera.viewportWidth / 2f);
+			final float cameraRight = camera.position.x + (camera.viewportWidth / 2f);
+			final float cameraBottom = camera.position.y - (camera.viewportHeight / 2f);
+			final float cameraTop = camera.position.y + (camera.viewportHeight / 2f);
+			
 			batch.totalRenderCalls = 0;
 			batch.maxSpritesInBatch = 0;
 			GLProfiler.reset();
@@ -152,24 +163,26 @@ public class GameApp extends ApplicationAdapter implements BlobObserver
 			
 			/* Draw debug text. */
 			if (debugInfo != null && debugInfoLayout != null) {
-				float right = camera.position.x + (camera.viewportWidth / 2f);
-				float bottom = camera.position.y - (camera.viewportHeight / 2f);
-				
 				batch.begin();
 				batch.enableBlending();
-				batch.draw(transparentGrayPixelTexture, right - debugInfoLayout.width - 4, bottom, debugInfoLayout.width + 4, debugInfoLayout.height + 8);
-				debugInfoFont.draw(batch, debugInfoText, right - debugInfoLayout.width, bottom + debugInfoLayout.height + 4);
+				batch.draw(transparentGrayPixelTexture, cameraRight - debugInfoLayout.width - 4, cameraBottom, debugInfoLayout.width + 4, debugInfoLayout.height + 8);
+				debugInfoFont.draw(batch, debugInfoText, cameraRight - debugInfoLayout.width, cameraBottom + debugInfoLayout.height + 4);
 				batch.end();
 			}
 			
-			/* Draw UI text. */
+			/* Draw UI text: blob size. */
 			if (blobSizeTextLayout != null) {
-				float right = camera.position.x + (camera.viewportWidth / 2f);
-				float top = camera.position.y + (camera.viewportHeight / 2f);
-				
 				batch.begin();
 				batch.enableBlending();
-				uiFont.draw(batch, blobSizeText, right - blobSizeTextLayout.width - 8, top - blobSizeTextLayout.height);
+				uiFont.draw(batch, blobSizeText, cameraRight - blobSizeTextLayout.width - 8, cameraTop - 10);
+				batch.end();
+			}
+			
+			/* Draw UI text: citizens. */
+			{
+				batch.begin();
+				batch.enableBlending();
+				uiFont.draw(batch, kingdomInfoText, cameraLeft + 8, cameraTop - 10);
 				batch.end();
 			}
 			
