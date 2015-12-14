@@ -130,6 +130,7 @@ public class Launcher extends Application
 					config.title = "Canfield LD34";
 					config.fullscreen = fullscreenCheckbox.isSelected();
 					config.samples = antialiasingCheckbox.isSelected() ? 8 : 0;
+					config.resizable = false;
 					gameApp = new LwjglApplication(new GameApp(), config);
 				} catch (Exception e) {
 					stage.show();

@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class Graphics
 {
 	private final SpriteBatch batch;
@@ -21,8 +23,8 @@ public class Graphics
 
 	public Graphics(SpriteBatch batch, OrthographicCamera camera)
 	{
-		this.batch = batch;
-		this.camera = camera;
+		this.batch = checkNotNull(batch);
+		this.camera = checkNotNull(camera);
 		
 		this.viewportHalfWidth = (int)(camera.viewportWidth / 2f + 1);
 		this.viewportHalfHeight = (int)(camera.viewportHeight / 2f + 1);
@@ -50,7 +52,6 @@ public class Graphics
 
 	public void render(World world)
 	{
-		long startTime = System.nanoTime();
 		byte[][] blocks = world.getTerrain();
 
 		int left = (int)(camera.position.x - viewportHalfWidth);
@@ -70,6 +71,9 @@ public class Graphics
 		final int endColumn = Terrain.worldXToColumn(right);
 		final int startRow = Terrain.worldYToRow(bottom);
 		final int endRow = Terrain.worldYToRow(top);
+		
+		batch.begin();
+		batch.disableBlending();
 		
 		for (int column = startColumn; column < endColumn; column++) {
 			for (int row = startRow; row < endRow; row++) {
@@ -106,6 +110,9 @@ public class Graphics
 				}
 			}
 		}
+		
+		batch.end();
+		
 //		System.out.println("World render time: " + (System.nanoTime() - startTime) / 1_000_000.0);
 	}
 	

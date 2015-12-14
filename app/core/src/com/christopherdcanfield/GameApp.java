@@ -30,6 +30,8 @@ public class GameApp extends ApplicationAdapter implements BlobObserver
 	private OrthographicCamera camera;
 	
 	private UserInputHandler inputHandler;
+	private BuildingInputHandler buildingInputHandler;
+	
 	private Set<GridPoint2> selectedFeatures;
 	private HoveredBlock hoveredBlock = new HoveredBlock();
 	private String hoverText;
@@ -61,12 +63,15 @@ public class GameApp extends ApplicationAdapter implements BlobObserver
 	public void create() {
 		try {
 			batch = new SpriteBatch(5000);
-	
+			debugInfo = new DebugInfo(batch);
+			GLProfiler.enable();
+			
 			world = new World();
 			world.addBlobListener(this);
 			camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight / 2f, 0);
 			camera.update();
+
 			graphics = new Graphics(batch, camera);
 			
 			transparentGrayPixelTexture = new Texture("transparentGrayPixel.png");
@@ -100,12 +105,10 @@ public class GameApp extends ApplicationAdapter implements BlobObserver
 				fontGenerator.dispose();
 			}
 
-			debugInfo = new DebugInfo(batch);
-			GLProfiler.enable();
-			
 			selectedFeatures = new HashSet<>();
+			buildingInputHandler = new BuildingInputHandler(camera, transparentGrayPixelTexture);
 			inputHandler = new UserInputHandler(camera, world.getBounds(), selectedFeatures, hoveredBlock);
-			InputMultiplexer inputMultiplexer = new InputMultiplexer(inputHandler);
+			InputMultiplexer inputMultiplexer = new InputMultiplexer(buildingInputHandler, inputHandler);
 			Gdx.input.setInputProcessor(inputMultiplexer);
 			
 			App.scheduledExecutor.scheduleAtFixedRate(() -> {
@@ -146,10 +149,7 @@ public class GameApp extends ApplicationAdapter implements BlobObserver
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 			
 			/* Render the world. */
-			batch.disableBlending();
-			batch.begin();
 			graphics.render(world);
-			batch.end();
 			
 			/* Render selected features. */
 			batch.enableBlending();
@@ -207,6 +207,9 @@ public class GameApp extends ApplicationAdapter implements BlobObserver
 				uiFont.draw(batch, kingdomInfoText, cameraLeft + 8, cameraTop - 10);
 				batch.end();
 			}
+			
+			/* Draw building ui. */
+			buildingInputHandler.render(batch);
 			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
