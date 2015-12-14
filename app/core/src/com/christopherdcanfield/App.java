@@ -5,5 +5,5 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class App
 {
-	public static ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
+	public static final ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
 }

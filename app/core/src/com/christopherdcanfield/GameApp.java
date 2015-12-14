@@ -169,8 +169,8 @@ public class GameApp extends ApplicationAdapter implements BlobObserver
 			{
 				byte terrainBlock = world.getTerrain()[hoveredBlock.terrain.x][hoveredBlock.terrain.y];
 				
-				String blobResistance = DecimalFormat.getPercentInstance().format(1 - Terrain.getBlobTakeoverChance(terrainBlock));
-				hoverText = Terrain.toString(terrainBlock) + (terrainBlock != Terrain.TYPE_BLOB ? ("\n" + blobResistance + " resistance") : "");
+				String blobResistance = DecimalFormat.getPercentInstance().format(Terrain.getBlobResistance(terrainBlock));
+				hoverText = Terrain.getName(terrainBlock) + (terrainBlock != Terrain.TYPE_BLOB ? ("\n" + blobResistance + " resistance") : "");
 				batch.begin();
 				batch.enableBlending();
 				hoverFont.draw(batch, hoverText, cameraLeft + Gdx.input.getX() - 10, cameraTop - Gdx.input.getY() - 30);

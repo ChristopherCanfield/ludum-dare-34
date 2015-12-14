@@ -2,8 +2,6 @@ package com.christopherdcanfield;
 
 import java.util.ArrayList;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.IconifyAction;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -23,6 +21,9 @@ public class BuildingInputHandler implements InputProcessor
 	private final int buildingIconAreaStartX;
 	private final int iconHeight;
 	
+	public byte selectedBuildingType = TerrainFeature.TYPE_NONE;
+	public byte hoveredBuildingType = TerrainFeature.TYPE_NONE;
+	
 	public BuildingInputHandler(OrthographicCamera camera, Texture transparentGrayPixelTexture)
 	{
 		this.camera = camera;
@@ -36,12 +37,12 @@ public class BuildingInputHandler implements InputProcessor
 		buildingIconAreaWidth = (iconWidth + marginBetweenIcons) * 5 + iconWidth + marginBetweenIcons;
 		buildingIconAreaStartX = Gdx.graphics.getWidth() / 2 - buildingIconAreaWidth / 2;
 		
-		buildingIcons.add(new BuildingIcon(buildingIconAreaStartX, 5, iconWidth, iconHeight, "Wood Wall"));
-		buildingIcons.add(new BuildingIcon(buildingIconAreaStartX + iconWidth + marginBetweenIcons, 5, iconWidth, iconHeight, "Stone Wall"));
-		buildingIcons.add(new BuildingIcon(buildingIconAreaStartX + (iconWidth + marginBetweenIcons) * 2, 5, iconWidth, iconHeight, "Moat"));
-		buildingIcons.add(new BuildingIcon(buildingIconAreaStartX + (iconWidth + marginBetweenIcons) * 3, 5, iconWidth, iconHeight, "Road"));
-		buildingIcons.add(new BuildingIcon(buildingIconAreaStartX + (iconWidth + marginBetweenIcons) * 4, 5, iconWidth, iconHeight, "Guard Tower"));
-		buildingIcons.add(new BuildingIcon(buildingIconAreaStartX + (iconWidth + marginBetweenIcons) * 5, 5, iconWidth, iconHeight, "Farm"));
+		buildingIcons.add(new BuildingIcon(buildingIconAreaStartX, 5, iconWidth, iconHeight, TerrainFeature.TYPE_WOOD_WALL));
+		buildingIcons.add(new BuildingIcon(buildingIconAreaStartX + iconWidth + marginBetweenIcons, 5, iconWidth, iconHeight, TerrainFeature.TYPE_STONE_WALL));
+		buildingIcons.add(new BuildingIcon(buildingIconAreaStartX + (iconWidth + marginBetweenIcons) * 2, 5, iconWidth, iconHeight, TerrainFeature.TYPE_MOAT));
+		buildingIcons.add(new BuildingIcon(buildingIconAreaStartX + (iconWidth + marginBetweenIcons) * 3, 5, iconWidth, iconHeight, TerrainFeature.TYPE_ROAD));
+		buildingIcons.add(new BuildingIcon(buildingIconAreaStartX + (iconWidth + marginBetweenIcons) * 4, 5, iconWidth, iconHeight, TerrainFeature.TYPE_GUARD_TOWER));
+		buildingIcons.add(new BuildingIcon(buildingIconAreaStartX + (iconWidth + marginBetweenIcons) * 5, 5, iconWidth, iconHeight, TerrainFeature.TYPE_FARM));
 	}
 	
 	public void render(SpriteBatch batch)
@@ -87,6 +88,11 @@ public class BuildingInputHandler implements InputProcessor
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button)
 	{
+		BuildingIcon icon = getBuildingIcon(screenX, screenY);
+		if (icon != null) {
+			return true;
+		}
+		
 		return false;
 	}
 
@@ -99,14 +105,22 @@ public class BuildingInputHandler implements InputProcessor
 	@Override
 	public boolean mouseMoved(int screenX, int screenY)
 	{
-		for (BuildingIcon icon : buildingIcons) {
-			if (icon.contains(screenX, Gdx.graphics.getHeight() - screenY)) {
-				System.out.println("Over icon: " + icon.name);
-				return true;
-			}
+		if (getBuildingIcon(screenX, screenY) != null) {
+			return true;
 		}
 		
 		return false;
+	}
+	
+	private BuildingIcon getBuildingIcon(int screenX, int screenY)
+	{
+		for (BuildingIcon icon : buildingIcons) {
+			if (icon.contains(screenX, Gdx.graphics.getHeight() - screenY)) {
+				return icon;
+			}
+		}
+		
+		return null;
 	}
 
 	@Override
@@ -120,11 +134,13 @@ public class BuildingInputHandler implements InputProcessor
 		private static final long serialVersionUID = 1L;
 	
 		public final String name;
+		public final byte buildingType;
 		
-		BuildingIcon(float x, float y, float width, float height, String name)
+		BuildingIcon(float x, float y, float width, float height, byte buildingType)
 		{
 			super(x, y, width, height);
-			this.name = name;
+			this.buildingType = buildingType;
+			this.name = TerrainFeature.getName(buildingType);
 		}
 	}
 }

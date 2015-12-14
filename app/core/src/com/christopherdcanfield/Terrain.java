@@ -12,14 +12,26 @@ public class Terrain
 	public static final byte TYPE_DEEP_WATER = 4;
 	public static final byte TYPE_BLOB = 5;
 
-//	public static byte getType(byte block)
-//	{
-//		int type = block & TYPE_BIT_MASK;
-//		assert (type == TYPE_DIRT ||
-//				type == TYPE_GRASS ||
-//				type == TYPE_WATER);
-//		return (byte)type;
-//	}
+
+	public static String getName(byte block)
+	{
+		switch (block) {
+			case TYPE_GRASS:
+				return "Grass";
+			case TYPE_TALL_GRASS:
+				return "Tall Grass";
+			case TYPE_DIRT:
+				return "Dirt";
+			case TYPE_SHALLOW_WATER:
+				return "Shallow Water";
+			case TYPE_DEEP_WATER:
+				return "Deep Water";
+			case TYPE_BLOB:
+				return "Blob";
+			default:
+				throw new IllegalArgumentException("Unknown terrain block type: " + block);
+		}
+	}
 	
 	public static double getBlobTakeoverChance(byte block)
 	{
@@ -38,7 +50,12 @@ public class Terrain
 				return 0;
 		}
 	}
-
+	
+	public static double getBlobResistance(byte block)
+	{
+		return 1 - getBlobTakeoverChance(block);
+	}
+	
 	public static int worldColumnToPixelX(int column)
 	{
 		return column * PIXELS_WIDTH;
@@ -67,25 +84,5 @@ public class Terrain
 	public static int worldYToRow(int y)
 	{
 		return y / PIXELS_HEIGHT;
-	}
-	
-	public static String toString(byte block)
-	{
-		switch (block) {
-			case TYPE_GRASS:
-				return "Grass";
-			case TYPE_TALL_GRASS:
-				return "Tall Grass";
-			case TYPE_DIRT:
-				return "Dirt";
-			case TYPE_SHALLOW_WATER:
-				return "Shallow Water";
-			case TYPE_DEEP_WATER:
-				return "Deep Water";
-			case TYPE_BLOB:
-				return "Blob";
-			default:
-				throw new IllegalArgumentException("Unknown terrain block type: " + block);
-		}
 	}
 }
