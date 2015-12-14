@@ -90,6 +90,8 @@ public class BuildingInputHandler implements InputProcessor
 	{
 		BuildingIcon icon = getBuildingIcon(screenX, screenY);
 		if (icon != null) {
+			selectedBuildingType = icon.buildingType;
+			System.out.println("Clicked on " + icon.name);
 			return true;
 		}
 		
@@ -105,7 +107,9 @@ public class BuildingInputHandler implements InputProcessor
 	@Override
 	public boolean mouseMoved(int screenX, int screenY)
 	{
-		if (getBuildingIcon(screenX, screenY) != null) {
+		BuildingIcon icon = getBuildingIcon(screenX, screenY);
+		if (icon != null) {
+			hoveredBuildingType = icon.buildingType;
 			return true;
 		}
 		
