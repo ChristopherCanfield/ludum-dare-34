@@ -184,6 +184,22 @@ public class UserInputHandler implements InputProcessor
 		int terrainRow = Terrain.screenYToRow(screenY - bottom, Gdx.graphics.getHeight());
 		hoveredBlock.terrain = new GridPoint2(terrainColumn, terrainRow);
 		
+		if (Gdx.graphics.isFullscreen()) {
+			moveCameraLeft = moveCameraRight = false;
+			if (screenX < 2) {
+				moveCameraLeft = true;
+			} else if (screenX > (camera.viewportWidth - 2)) {
+				moveCameraRight = true;
+			}
+			
+			moveCameraUp = moveCameraDown = false;
+			if (screenY < 2) {
+				moveCameraUp = true;
+			} else if (screenY > (camera.viewportHeight - 2)) {
+				moveCameraDown = true;
+			}
+		}
+		
 		return false;
 	}
 
